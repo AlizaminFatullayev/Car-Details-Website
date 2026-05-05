@@ -90,10 +90,14 @@
   function cardTemplate(s) {
     return `
       <article class="card">
-        <div class="card-photo">
-          <img src="${escapeAttr(s.image)}" alt="${escapeAttr(s.name)}" loading="lazy" />
-        </div>
-        <p class="card-bio">${escapeHtml(s.about)}</p>
+        <a class="card-link"
+           href="specialists/${escapeAttr(s.id)}.html"
+           aria-label="${escapeAttr(s.name)} — Ətraflı məlumat">
+          <div class="card-photo">
+            <img src="${escapeAttr(s.image)}" alt="${escapeAttr(s.name)}" loading="lazy" />
+          </div>
+          <p class="card-bio">${escapeHtml(s.about)}</p>
+        </a>
         <div class="card-actions">
           <a class="card-action card-action-whatsapp"
              href="${escapeAttr(s.whatsapp)}"

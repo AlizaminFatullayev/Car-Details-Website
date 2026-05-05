@@ -1,0 +1,2 @@
+# Pretty URLs for specialist detail pages: /specialists/ramin -> /specialists/ramin.html
+/specialists/:slug   /specialists/:slug.html   200
