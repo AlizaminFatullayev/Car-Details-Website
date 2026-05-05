@@ -1,0 +1,38 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "specialists"
+    label: "Mütəxəssislər"
+    files:
+      - file: "data/specialists.json"
+        name: "list"
+        label: "Mütəxəssislər siyahısı"
+        format: "json"
+        fields:
+          - label: "Mütəxəssislər"
+            name: "specialists"
+            widget: "list"
+            summary: "{{fields.name}} — {{fields.brand}}"
+            fields:
+              - { label: "ID", name: "id", widget: "string", hint: "Unikal identifikator (məs: ramin)" }
+              - { label: "Brend", name: "brand", widget: "string" }
+              - { label: "Şüar", name: "tagline", widget: "string", required: false }
+              - { label: "Ad Soyad", name: "name", widget: "string" }
+              - { label: "Vəzifə", name: "title", widget: "string" }
+              - { label: "Profil şəkli", name: "image", widget: "image" }
+              - { label: "Bio / haqqında", name: "about", widget: "text" }
+              - { label: "WhatsApp linki", name: "whatsapp", widget: "string", hint: "Məs: https://wa.me/994553057515" }
+              - { label: "Telegram linki", name: "telegram", widget: "string", hint: "Məs: https://t.me/+994553057515" }
+
+  - name: "posts"
+    label: "Yazılar"
+    folder: "_posts"
+    create: true
+    fields:
+      - { label: "Başlıq", name: "title", widget: "string" }
+      - { label: "Mətn", name: "body", widget: "markdown" }

@@ -1,7 +1,26 @@
 (function () {
   "use strict";
 
-  /* ---------- Navbar (shared) ---------- */
+  const WHATSAPP_SVG =
+    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>';
+
+  const TELEGRAM_SVG =
+    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0Zm4.962 7.224c.1-.002.321.023.464.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212-.07-.062-.174-.041-.249-.024-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635Z"/></svg>';
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function escapeAttr(value) {
+    return escapeHtml(value);
+  }
+
+  /* ---------- Navbar (mobile menu) ---------- */
   function initNavbar() {
     const toggle = document.getElementById("navToggle");
     const menu = document.getElementById("navMenu");
@@ -26,26 +45,7 @@
     });
   }
 
-  /* ---------- Home: render brand cards + scroll spy ---------- */
-  function renderCards() {
-    const grid = document.getElementById("cardsGrid");
-    if (!grid || typeof specialists === "undefined") return;
-
-    grid.innerHTML = specialists
-      .map(
-        (s) => `
-        <a class="card" href="pages/specialist.html?id=${s.id}" data-id="${s.id}" aria-label="${s.brand} mütəxəssisi">
-          <div class="card-icon">
-            <span class="material-symbols-outlined">${s.icon}</span>
-          </div>
-          <h3 class="card-brand">${s.brand}</h3>
-          <p class="card-name">${s.name}</p>
-          <span class="card-tagline">${s.tagline}</span>
-        </a>`
-      )
-      .join("");
-  }
-
+  /* ---------- Scroll spy for nav active state ---------- */
   function initScrollSpy() {
     const links = document.querySelectorAll("[data-nav]");
     if (!links.length) return;
@@ -70,171 +70,61 @@
     sections.forEach((s) => observer.observe(s));
   }
 
-  /* ---------- Home: contact form ---------- */
-  function initContactForm() {
-    const form = document.getElementById("contactForm");
-    if (!form) return;
-    const status = document.getElementById("contactStatus");
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const data = new FormData(form);
-      const name = (data.get("name") || "").toString().trim();
-      const email = (data.get("email") || "").toString().trim();
-      const message = (data.get("message") || "").toString().trim();
-
-      if (!name || !email || !message) {
-        status.textContent = "Bütün sahələri doldurun";
-        status.style.color = "#ffb4ab";
-        return;
+  /* ---------- Load specialists (CMS-editable JSON, JS fallback) ---------- */
+  async function loadSpecialists() {
+    try {
+      const res = await fetch("data/specialists.json", { cache: "no-store" });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && Array.isArray(json.specialists) && json.specialists.length) {
+          return json.specialists;
+        }
       }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        status.textContent = "E-poçt ünvanı düzgün deyil";
-        status.style.color = "#ffb4ab";
-        return;
-      }
-
-      status.style.color = "";
-      status.textContent = "Mesajınız göndərildi. Tezliklə əlaqə saxlayacağıq.";
-      form.reset();
-    });
+    } catch (_) {
+      /* fall back below */
+    }
+    return typeof specialists !== "undefined" ? specialists : [];
   }
 
-  /* ---------- Specialist details page ---------- */
-  function renderSpecialist() {
-    const root = document.getElementById("specialistRoot");
-    if (!root || typeof specialists === "undefined") return;
-
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-    const specialist =
-      specialists.find((s) => s.id === id) || specialists[0];
-
-    document.title = `${specialist.name} — ${specialist.title} | Car Details`;
-
-    const mapQuery = encodeURIComponent(specialist.address);
-    const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
-    const mapLink = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
-
-    root.innerHTML = `
-      <aside class="specialist-profile">
-        <div class="specialist-image">
-          <img src="${specialist.image}" alt="${specialist.name}" loading="lazy" />
+  /* ---------- Render specialist cards ---------- */
+  function cardTemplate(s) {
+    return `
+      <article class="card">
+        <div class="card-photo">
+          <img src="${escapeAttr(s.image)}" alt="${escapeAttr(s.name)}" loading="lazy" />
         </div>
-        <div>
-          <h1 class="specialist-name">${specialist.name}</h1>
-          <div class="specialist-title-row">
-            <span class="specialist-title-text">${specialist.title}</span>
-          </div>
-        </div>
-        <div class="specialist-actions">
-          <a class="specialist-action" href="tel:${specialist.phone.replace(
-            /\s/g,
-            ""
-          )}" aria-label="Zəng et">
-            <span class="material-symbols-outlined">call</span>
+        <p class="card-bio">${escapeHtml(s.about)}</p>
+        <div class="card-actions">
+          <a class="card-action card-action-whatsapp"
+             href="${escapeAttr(s.whatsapp)}"
+             target="_blank"
+             rel="noopener noreferrer"
+             aria-label="${escapeAttr(s.name)} — WhatsApp">
+            ${WHATSAPP_SVG}
           </a>
-          <a class="specialist-action" href="mailto:${specialist.email}" aria-label="E-poçt göndər">
-            <span class="material-symbols-outlined">mail</span>
+          <a class="card-action card-action-telegram"
+             href="${escapeAttr(s.telegram)}"
+             target="_blank"
+             rel="noopener noreferrer"
+             aria-label="${escapeAttr(s.name)} — Telegram">
+            ${TELEGRAM_SVG}
           </a>
-          <button class="specialist-action" id="shareBtn" aria-label="Paylaş">
-            <span class="material-symbols-outlined">share</span>
-          </button>
         </div>
-      </aside>
-
-      <div class="specialist-content">
-        <article class="bio-card glass">
-          <span class="bio-eyebrow">Tərcümeyi-hal</span>
-          <p class="bio-text">${specialist.about}</p>
-          <div class="bio-meta">
-            <div>
-              <div class="bio-meta-label">Əlaqə nömrəsi</div>
-              <div class="bio-meta-value">${specialist.phone}</div>
-            </div>
-            <div>
-              <div class="bio-meta-label">E-poçt</div>
-              <div class="bio-meta-value">${specialist.email}</div>
-            </div>
-            <div>
-              <div class="bio-meta-label">Ünvan</div>
-              <div class="bio-meta-value">${specialist.address}</div>
-            </div>
-            <div>
-              <div class="bio-meta-label">Sertifikat</div>
-              <div class="bio-meta-value">${specialist.certification} Authorized</div>
-            </div>
-          </div>
-        </article>
-
-        <div class="stats-grid">
-          <div class="stat glass">
-            <span class="material-symbols-outlined">verified</span>
-            <div class="stat-value">${specialist.repairs}</div>
-            <div class="stat-label">Təmir Edilən Mühərrik</div>
-          </div>
-          <div class="stat glass">
-            <span class="material-symbols-outlined">speed</span>
-            <div class="stat-value">${specialist.experience}</div>
-            <div class="stat-label">İllik Təcrübə</div>
-          </div>
-          <div class="stat glass">
-            <span class="material-symbols-outlined">workspace_premium</span>
-            <div class="stat-value">${specialist.certification}</div>
-            <div class="stat-label">Sertifikatlı Usta</div>
-          </div>
-        </div>
-
-        <a class="map-card glass" href="${mapLink}" target="_blank" rel="noopener" aria-label="Məkanı xəritədə görün">
-          <iframe
-            src="${mapSrc}"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            title="Map">
-          </iframe>
-          <span class="map-pin">
-            <span class="material-symbols-outlined">location_on</span>
-            Məkanı Xəritədə Görün
-          </span>
-        </a>
-      </div>
+      </article>
     `;
+  }
 
-    const shareBtn = document.getElementById("shareBtn");
-    if (shareBtn) {
-      shareBtn.addEventListener("click", async () => {
-        const shareData = {
-          title: document.title,
-          text: `${specialist.name} — ${specialist.title}`,
-          url: window.location.href
-        };
-        try {
-          if (navigator.share) {
-            await navigator.share(shareData);
-          } else {
-            await navigator.clipboard.writeText(window.location.href);
-            shareBtn.classList.add("copied");
-            const icon = shareBtn.querySelector(".material-symbols-outlined");
-            const original = icon.textContent;
-            icon.textContent = "check";
-            setTimeout(() => {
-              icon.textContent = original;
-              shareBtn.classList.remove("copied");
-            }, 1500);
-          }
-        } catch (_) {
-          /* user cancelled */
-        }
-      });
-    }
+  async function renderCards() {
+    const grid = document.getElementById("cardsGrid");
+    if (!grid) return;
+    const list = await loadSpecialists();
+    grid.innerHTML = list.map(cardTemplate).join("");
   }
 
   /* ---------- Boot ---------- */
   document.addEventListener("DOMContentLoaded", () => {
     initNavbar();
-    renderCards();
     initScrollSpy();
-    initContactForm();
-    renderSpecialist();
+    renderCards();
   });
 })();

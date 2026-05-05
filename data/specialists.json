@@ -1,0 +1,48 @@
+{
+  "specialists": [
+    {
+      "id": "ramin",
+      "brand": "BMW / HYUNDAI / KIA",
+      "tagline": "Çox brendli ekspert",
+      "name": "Ramin Bayramov",
+      "title": "BMW, Hyundai və Kia Mütəxəssisi",
+      "image": "https://i.pravatar.cc/600?img=12",
+      "about": "Ramin Bayramov — BMW, Hyundai və Kia brendləri üzrə geniş profilli mütəxəssis. Çoxillik təcrübəsi ilə diaqnostika, mühərrik sazlanması və ötürmə sistemlərinin texniki xidmətində ixtisaslaşmışdır. Hər üç brendin müasir modelləri üzrə dərin biliyə malikdir.",
+      "whatsapp": "https://wa.me/994553057515",
+      "telegram": "https://t.me/+994553057515"
+    },
+    {
+      "id": "eldar",
+      "brand": "MERCEDES",
+      "tagline": "Lüks və Keyfiyyət",
+      "name": "Eldar Abbasov",
+      "title": "Mercedes-Benz Mütəxəssisi",
+      "image": "https://i.pravatar.cc/600?img=33",
+      "about": "Eldar Abbasov — Mercedes-Benz brendi üzrə peşəkar usta. AMG performans paketləri, hava asqı sistemləri və müasir elektronika onun ixtisas sahəsidir. Müştəri etibarını ilk növbədə qoruyur və hər bir avtomobilə fərdi yanaşma tətbiq edir.",
+      "whatsapp": "https://wa.me/994553057515",
+      "telegram": "https://t.me/+994553057515"
+    },
+    {
+      "id": "elfaq",
+      "brand": "CHEVROLET",
+      "tagline": "Amerikan Mühəndisliyi",
+      "name": "Elfaq Abbasov",
+      "title": "Chevrolet Mütəxəssisi",
+      "image": "https://i.pravatar.cc/600?img=15",
+      "about": "Elfaq Abbasov — Chevrolet brendi üzrə təcrübəli mütəxəssis. Amerikan mühəndisliyi, V6 və V8 mühərrikləri, avtomatik transmissiyalar və müasir Chevrolet modellərinin elektronikası ilə işləməkdə peşəkardır.",
+      "whatsapp": "https://wa.me/994553057515",
+      "telegram": "https://t.me/+994553057515"
+    },
+    {
+      "id": "eli",
+      "brand": "VAZ",
+      "tagline": "Klassik və Etibarlı",
+      "name": "Eli Hüseynov",
+      "title": "VAZ Mütəxəssisi",
+      "image": "https://i.pravatar.cc/600?img=8",
+      "about": "Eli Hüseynov — VAZ avtomobilləri üzrə usta. Klassik və müasir VAZ modellərinin təmiri, sazlanması və restavrasiyasında uzun illik təcrübəyə malikdir. Ehtiyat hissələrinin seçimi və qiyafəti üzrə də dəstək göstərir.",
+      "whatsapp": "https://wa.me/994553057515",
+      "telegram": "https://t.me/+994553057515"
+    }
+  ]
+}
